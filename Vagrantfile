@@ -14,7 +14,7 @@ Vagrant.configure('2') do |config|
 
    #Playbook Ansible
    config.vm.provision "ansible" do |ansible|
-      ansible.playbook = "/etc/ansible/playbooks/provision-vagrant.yml"
+      ansible.playbook = "/etc/ansible/playbooks/site.yml"
       ansible.config_file = "/etc/ansible/ansible.cfg"
    end
   end
