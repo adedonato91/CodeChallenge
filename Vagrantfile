@@ -16,6 +16,9 @@ Vagrant.configure('2') do |config|
    config.vm.provision "ansible" do |ansible|
       ansible.playbook = "/etc/ansible/playbooks/site.yml"
       ansible.config_file = "/etc/ansible/ansible.cfg"
+      ansible.groups = {
+       "docker" => ["node[1:2]"]
+      }
    end
   end
 end
