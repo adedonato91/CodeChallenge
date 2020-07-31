@@ -1,0 +1,24 @@
+- hosts: all
+  
+  pre_tasks:
+    - name: /dev/sda1 should be over 40G
+      assert:
+        that:
+          - mount.size_total is defined
+          - mount.size_total >= {{  '39 GB'|human_to_bytes}}
+        fail_msg: mount is too small
+        success_msg: the mount is good
+      vars:
+       mount: "{{ ansible_mounts | selectattr('device','equalto','/dev/sda1') | list | first }}"
+  
+  roles:
+    - geerlingguy.docker
+  
+  post_tasks:
+
+    - name: Secure the docker daemon
+      hosts: all
+      roles:
+        - role: ansible.secure-docker-daemon
+          dds_host: 192.168.0.11
+          dds_restart_docker: no
