@@ -1,0 +1,31 @@
+- hosts: docker
+
+  vars_files:
+  - ../group_vars/docker
+
+  roles:
+  - role: 0x0i.systemd
+    vars: 
+      unit_config:
+      - name: "docker"
+        path: "{{ docker_service_path }}"
+        Unit:
+          BindsTo: "{{ val_binds }}"
+          After: "{{ val_after }}"
+          Wants: "{{ val_wants }}"
+          Requires: "{{ val_require }}"
+        Service:
+          Type: "{{ val_type }}"
+          ExecStart: "{{ val_execstart }}"
+          ExecReload: "{{ val_execreload }}"
+          Delegate: "{{ val_delegate }}"
+          KillMode: "{{ val_kill }}"
+        Install:
+          WantedBy: "{{ val_wanted }}"
+
+  post_tasks:
+
+  - name: Reload Docker daemon
+    command: systemctl daemon-reload
+  - name: Restart Docker daemon
+    command: systemctl restart docker.service

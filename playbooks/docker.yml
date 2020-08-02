@@ -12,11 +12,11 @@
   #     mount: "{{ ansible_mounts | selectattr('device','equalto','/dev/sda1') | list | first }}"
   
   roles:
-   # - { role: geerlingguy.docker }
-    - { role: role-secure-docker-daemon,
-          dds_host: 192.168.0.11,
-          dds_server_cert_path: /etc/docker,
-          dds_restart_docker: no}
+    #- { role: geerlingguy.docker }
+    #- { role: role-secure-docker-daemon,
+     #     dds_host: 192.168.0.11,
+      #    dds_server_cert_path: /etc/docker,
+       #   dds_restart_docker: no}
   tasks:
     - name: fetch ca.pem from daemon host
       fetch:
@@ -36,12 +36,3 @@
         dest: ~/.docker/
         fail_on_missing: yes
         flat: yes
-
-    - name: Modify Environment variable OPTIONS in /etc/sysconfig/docker
-      lineinfile:
-        dest: /usr/lib/systemd/system/docker.service
-        line: "ExecStart='--selinux-enabled --log-driver=journald --tlsverify --tlscacert=/etc/docker/ca.pem --tlscert=/etc/docker/server-cert.pem --tlskey=/etc/docker/server-key.pem -H=0.0.0.0:2376 -H=unix:///var/run/docker.sock' --containerd=/run/containerd/containerd.sock"
-    - name: Reload Docker daemon
-      command: systemctl daemon-reload
-    - name: Restart Docker daemon
-      command: systemctl restart docker.service

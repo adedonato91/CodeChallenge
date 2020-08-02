@@ -1,0 +1,14 @@
+#vars
+
+docker_service_path: /usr/lib/systemd/system
+val_binds: containerd.service
+val_after: network-online.target firewalld.service containerd.service
+val_wants: network-online.target
+val_require: docker.socket
+val_type: notify
+val_execstart: /usr/bin/dockerd --selinux-enabled --log-driver=journald --tlsverify --tlscacert=/etc/docker/ca.pem --tlscert=/etc/docker/server-cert.pem --tlskey=/etc/docker/server-key.pem -H=0.0.0.0:2376 -H=unix:///var/run/docker.sock --containerd=/run/containerd/containerd.sock
+val_execreload: /bin/kill -s HUP $MAINPID
+val_delegate: yes
+val_kill: process
+val_wanted: multi-user.target
+ 
