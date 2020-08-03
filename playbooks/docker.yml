@@ -1,4 +1,4 @@
-- hosts: docker
+- hosts: all 
   
   #pre_tasks:
   #  - name: /dev/sda1 should be over 40G
@@ -10,29 +10,54 @@
   #      success_msg: the mount is good
   #    vars:
   #     mount: "{{ ansible_mounts | selectattr('device','equalto','/dev/sda1') | list | first }}"
-  
+  vars:
+    pip_install_packages:
+      - name: docker 
   roles:
-    #- { role: geerlingguy.docker }
+    - { role: geerlingguy.repo-epel}
+    - { role: geerlingguy.pip}
+    - { role: geerlingguy.docker }
     #- { role: role-secure-docker-daemon,
-     #     dds_host: 192.168.0.11,
-      #    dds_server_cert_path: /etc/docker,
-       #   dds_restart_docker: no}
-  tasks:
-    - name: fetch ca.pem from daemon host
-      fetch:
-        src: /root/.docker/ca.pem
-        dest: ~/.docker/
-        fail_on_missing: yes
-        flat: yes
-    - name: fetch cert.pem from daemon host
-      fetch:
-        src: /root/.docker/cert.pem
-        dest: ~/.docker/
-        fail_on_missing: yes
-        flat: yes
-    - name: fetch key.pem from daemon host
-      fetch:
-        src: /root/.docker/key.pem
-        dest: ~/.docker/
-        fail_on_missing: yes
-        flat: yes
+    #     dds_host: 192.168.0.11,
+    #     dds_server_cert_path: /etc/docker,
+    #     dds_restart_docker: no}
+  #tasks:
+  #  - name: fetch ca.pem from daemon host
+  #    fetch:
+  #      src: /root/.docker/ca.pem
+  #      dest: ~/.docker/
+  #      fail_on_missing: yes
+  #      flat: yes
+  #  - name: fetch cert.pem from daemon host
+  #    fetch:
+  #      src: /root/.docker/cert.pem
+  #      dest: ~/.docker/
+  #      fail_on_missing: yes
+  #      flat: yes
+  #  - name: fetch key.pem from daemon host
+  #    fetch:
+  #      src: /root/.docker/key.pem
+  #      dest: ~/.docker/
+  #      fail_on_missing: yes
+  #      flat: yes
+
+- hosts: swarm_managers
+
+  name: Secure docker daemon
+
+  roles:
+    - { role: role-secure-docker-daemon,
+         dds_host: 192.168.0.11,
+         dds_server_cert_path: /etc/docker,
+         dds_restart_docker: no}
+
+- hosts: swarm_workers
+
+  name: Secure docker daemon
+
+  roles:
+    - { role: role-secure-docker-daemon,
+         dds_host: 192.168.0.12,
+         dds_server_cert_path: /etc/docker,
+         dds_restart_docker: no}
+

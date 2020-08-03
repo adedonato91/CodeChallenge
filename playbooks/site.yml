@@ -1,2 +1,4 @@
 - import_playbook: docker.yml
 - import_playbook: configuration.yml
+- import_playbook: init_swarm_cluster.yml
+- import_playbook: join_workers_to_manager.yml
