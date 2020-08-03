@@ -1,0 +1,23 @@
+---
+#- name: Get join token
+#  hosts: swarm_managers
+#  gather_facts: yes
+#  run_once: true
+ # tasks:
+
+#- name: Join swarm
+#  hosts: swarm_workers
+#  gather_facts: yes
+#  tasks:
+- name: Leave swarm
+  docker_swarm:
+    state: absent
+- name: Join swarm
+  docker_swarm:
+    state: join
+    remote_addrs: "{{ hostvars[groups['swarm_managers'][0]]['ansible_host'] }}"
+    advertise_addr: "{{ hostvars[inventory_hostname].ansible_host }}"
+    join_token: "{{ hostvars[groups['swarm_managers'][0]]['join_token'] }}"
+    register: join_output
+- name: Debug join_output
+  debug: var=join_output

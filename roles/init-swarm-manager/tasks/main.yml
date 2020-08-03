@@ -1,0 +1,34 @@
+---
+#- name: Deploy swarm manager
+  #hosts: swarm_managers
+ # gather_facts: yes
+  #tasks:
+
+- name: Leave swarm
+  docker_swarm:
+    state: absent
+    force: true
+
+- name: Init swarm
+  docker_swarm:
+    state: present
+    advertise_addr: "{{ hostvars[inventory_hostname].ansible_host }}"
+
+- name: Get swarm info
+  docker_swarm_info:
+  register: swarm_info
+
+- name: Debug docker swarm worker join token
+  debug: var=swarm_info.swarm_facts.JoinTokens.Worker
+
+- name: Debug swarm manager ip address
+  debug: var=hostvars[inventory_hostname].ansible_host
+
+- name: Set fact join_token
+  set_fact:
+    join_token: "{{ swarm_info.swarm_facts.JoinTokens.Worker }}"
+
+- name: Set fact manager_ip_address
+  set_fact:
+    manager_ip_address: "{{ hostvars[inventory_hostname].ansible_host }}"
+
