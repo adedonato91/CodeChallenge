@@ -50,6 +50,7 @@
          dds_host: 192.168.0.11,
          dds_server_cert_path: /etc/docker,
          dds_restart_docker: no}
+    - role: init-swarm-manager
 
 - hosts: swarm_workers
 
@@ -60,4 +61,11 @@
          dds_host: 192.168.0.12,
          dds_server_cert_path: /etc/docker,
          dds_restart_docker: no}
+    - role: join-worker
 
+- hosts: all
+
+  name: Build Image test
+
+  roles: 
+    - build-image-test
